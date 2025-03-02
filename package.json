@@ -1,0 +1,15 @@
+{
+  "name": "movie-ticket-booking-backend",
+  "version": "1.0.0",
+  "description": "This project is a microservices-based backend for a movie ticket booking system. It consists of four main services: Auth Service, Booking Service, Seat Service, and an API Gateway. Each service is responsible for a specific functionality and communicates with each other to provide a seamless experience for users.",
+  "main": "run-load-test.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Aryan Kesharwani",
+  "license": "ISC",
+  "dependencies": {
+    "autocannon": "^8.0.0",
+    "morgan": "^1.10.0"
+  }
+}
