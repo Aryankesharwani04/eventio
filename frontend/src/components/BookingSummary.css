@@ -1,0 +1,25 @@
+.booking-summary {
+  margin: 2rem auto;
+  max-width: 400px;
+  background: #1e293b;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+  padding: 1.5rem;
+  text-align: center;
+  color: #90caf9;
+}
+.book-btn {
+  margin-top: 1rem;
+  background: #43a047;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.7rem 2rem;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.book-btn:disabled {
+  background: #bdbdbd;
+  cursor: not-allowed;
+}
