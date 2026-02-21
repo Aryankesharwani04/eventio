@@ -2,10 +2,13 @@ const express = require('express');
 const router = express.Router();
 const seatController = require('../controllers/seatController');
 
-// Define routes
+// GET  /seats/seat/:seatNumber  — get a single seat's status
 router.get('/seat/:seatNumber', seatController.getSeat);
-router.get('/seat/A12', seatController.getSeat);
-router.put('/seat/book', seatController.bookSeat);
-router.post('/seat', seatController.addSeat);
+
+// PUT  /seats/book              — mark a seat as booked
+router.put('/book', seatController.bookSeat);
+
+// POST /seats                   — create a new seat record
+router.post('/', seatController.addSeat);
 
 module.exports = router;
