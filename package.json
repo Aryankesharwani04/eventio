@@ -1,15 +1,13 @@
 {
-  "name": "movie-ticket-booking-backend",
+  "name": "eventio",
   "version": "1.0.0",
-  "description": "This project is a microservices-based backend for a movie ticket booking system. It consists of four main services: Auth Service, Booking Service, Seat Service, and an API Gateway. Each service is responsible for a specific functionality and communicates with each other to provide a seamless experience for users.",
-  "main": "run-load-test.js",
+  "description": "Microservices-based movie ticket booking system",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "load-test": "node load-tests/run-load-test.js"
+  },
+  "devDependencies": {
+    "autocannon": "^8.0.0"
   },
   "author": "Aryan Kesharwani",
-  "license": "ISC",
-  "dependencies": {
-    "autocannon": "^8.0.0",
-    "morgan": "^1.10.0"
-  }
+  "license": "ISC"
 }

@@ -1,0 +1,9 @@
+{
+  "name": "@eventio/shared",
+  "version": "1.0.0",
+  "description": "Shared utilities, middleware, and constants for Eventio microservices",
+  "main": "index.js",
+  "dependencies": {
+    "uuid": "^9.0.0"
+  }
+}

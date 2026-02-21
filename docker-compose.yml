@@ -1,0 +1,158 @@
+version: '3.8'
+
+services:
+  # Infrastructure
+  mongodb:
+    image: mongo:6.0
+    container_name: eventio-mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=eventio
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - eventio-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: eventio-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - eventio-network
+
+  # Microservices
+  auth-service:
+    build:
+      context: ./services/auth-service
+      dockerfile: Dockerfile
+    container_name: eventio-auth-service
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - DATABASE_URL=mongodb://mongodb:27017/eventio_auth
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=${JWT_SECRET:-default_secret_change_in_production}
+      - JWT_EXPIRATION=7d
+      - NODE_ENV=development
+    depends_on:
+      - mongodb
+      - redis
+    networks:
+      - eventio-network
+    volumes:
+      - ./services/auth-service:/app
+      - /app/node_modules
+
+  booking-service:
+    build:
+      context: ./services/booking-service
+      dockerfile: Dockerfile
+    container_name: eventio-booking-service
+    ports:
+      - "3002:3002"
+    environment:
+      - PORT=3002
+      - DATABASE_URL=mongodb://mongodb:27017/eventio_booking
+      - REDIS_URL=redis://redis:6379
+      - AUTH_SERVICE_URL=http://auth-service:3001
+      - SEAT_SERVICE_URL=http://seat-service:3003
+      - NODE_ENV=development
+    depends_on:
+      - mongodb
+      - redis
+      - auth-service
+    networks:
+      - eventio-network
+    volumes:
+      - ./services/booking-service:/app
+      - /app/node_modules
+
+  seat-service:
+    build:
+      context: ./services/seat-service
+      dockerfile: Dockerfile
+    container_name: eventio-seat-service
+    ports:
+      - "3003:3003"
+    environment:
+      - PORT=3003
+      - DATABASE_URL=mongodb://mongodb:27017/eventio_seats
+      - REDIS_URL=redis://redis:6379
+      - NODE_ENV=development
+    depends_on:
+      - mongodb
+      - redis
+    networks:
+      - eventio-network
+    volumes:
+      - ./services/seat-service:/app
+      - /app/node_modules
+
+  payment-service:
+    build:
+      context: ./services/payment-service
+      dockerfile: Dockerfile
+    container_name: eventio-payment-service
+    ports:
+      - "3004:3004"
+    environment:
+      - PORT=3004
+      - NODE_ENV=development
+    networks:
+      - eventio-network
+    volumes:
+      - ./services/payment-service:/app
+      - /app/node_modules
+
+  notification-service:
+    build:
+      context: ./services/notification-service
+      dockerfile: Dockerfile
+    container_name: eventio-notification-service
+    ports:
+      - "3005:3005"
+    environment:
+      - PORT=3005
+      - NODE_ENV=development
+    networks:
+      - eventio-network
+    volumes:
+      - ./services/notification-service:/app
+      - /app/node_modules
+
+  api-gateway:
+    build:
+      context: ./gateway/api-gateway
+      dockerfile: Dockerfile
+    container_name: eventio-api-gateway
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - AUTH_SERVICE_URL=http://auth-service:3001
+      - BOOKING_SERVICE_URL=http://booking-service:3002
+      - SEAT_SERVICE_URL=http://seat-service:3003
+      - PAYMENT_SERVICE_URL=http://payment-service:3004
+      - NOTIFICATION_SERVICE_URL=http://notification-service:3005
+      - NODE_ENV=development
+    depends_on:
+      - auth-service
+      - booking-service
+      - seat-service
+      - payment-service
+      - notification-service
+    networks:
+      - eventio-network
+    volumes:
+      - ./gateway/api-gateway:/app
+      - /app/node_modules
+
+networks:
+  eventio-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:

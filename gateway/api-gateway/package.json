@@ -2,9 +2,10 @@
   "name": "api-gateway",
   "version": "1.0.0",
   "description": "API Gateway for the Movie Ticket Booking System",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
   },
   "dependencies": {
     "express": "^4.17.1",
