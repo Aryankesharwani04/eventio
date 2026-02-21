@@ -72,8 +72,8 @@ router.post('/book', async (req, res) => {
     return res.status(500).json({ message: 'Booking failed', error: error.message });
 
   } finally {
-    // Always release lock — whether success, business failure, or exception
-    await releaseSeatLock(showId, seatNumber).catch(() => {});
+    // Atomic ownership-checked release — Lua script ensures we only DEL if still owner
+    await releaseSeatLock(showId, seatNumber, userId).catch(() => {});
   }
 });
 
