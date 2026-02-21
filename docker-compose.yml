@@ -21,6 +21,11 @@ services:
       - "6379:6379"
     networks:
       - eventio-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # Microservices
   auth-service:
@@ -57,13 +62,17 @@ services:
       - PORT=3002
       - DATABASE_URL=mongodb://mongodb:27017/eventio_booking
       - REDIS_URL=redis://redis:6379
+      - SEAT_LOCK_TTL_SECONDS=300
       - AUTH_SERVICE_URL=http://auth-service:3001
       - SEAT_SERVICE_URL=http://seat-service:3003
       - NODE_ENV=development
     depends_on:
-      - mongodb
-      - redis
-      - auth-service
+      mongodb:
+        condition: service_started
+      redis:
+        condition: service_healthy
+      auth-service:
+        condition: service_started
     networks:
       - eventio-network
     volumes:
