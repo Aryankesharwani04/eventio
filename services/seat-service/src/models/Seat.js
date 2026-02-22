@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const seatSchema = new mongoose.Schema({
     seatNumber: {
@@ -12,4 +12,4 @@ const seatSchema = new mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model('Seat', seatSchema);
+export default mongoose.model('Seat', seatSchema);

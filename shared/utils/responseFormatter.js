@@ -7,14 +7,12 @@ const responseFormatter = {
     data,
     timestamp: new Date().toISOString()
   }),
-  
   error: (message, errors = null, statusCode = 500) => ({
     success: false,
     message,
     ...(errors && { errors }),
     timestamp: new Date().toISOString()
   }),
-  
   paginated: (data, page, limit, total, message = 'Success') => ({
     success: true,
     message,
@@ -29,4 +27,4 @@ const responseFormatter = {
   })
 };
 
-module.exports = responseFormatter;
+export default responseFormatter;

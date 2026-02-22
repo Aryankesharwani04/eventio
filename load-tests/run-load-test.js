@@ -1,8 +1,6 @@
-const autocannon = require('autocannon');
+import autocannon from 'autocannon';
 
-/**
- * Generic autocannon runner.
- */
+// autocannon runner 
 async function runLoadTest({ title, url, method = 'GET', headers = {}, body = null, connections = 10, duration = 10 }) {
   console.log(`\n${'─'.repeat(60)}`);
   console.log(`🚀 ${title}`);
@@ -31,12 +29,6 @@ async function runLoadTest({ title, url, method = 'GET', headers = {}, body = nu
 }
 
 async function runTests() {
-  // ──────────────────────────────────────────────────────────────────────────
-  // TEST 1: Seat Lock Concurrency
-  //   20 connections all try to book the SAME seat simultaneously.
-  //   Expected: exactly 1 success (201), rest get 409 SEAT_LOCKED.
-  //   Proves Redis distributed lock is working correctly.
-  // ──────────────────────────────────────────────────────────────────────────
   await runLoadTest({
     title: 'Seat Lock Concurrency Test — 20 users booking same seat',
     url: 'http://localhost:3002/api/book',
@@ -47,13 +39,6 @@ async function runTests() {
     duration: 5,
   });
 
-  // ──────────────────────────────────────────────────────────────────────────
-  // TEST 2: Different Seats in Parallel
-  //   10 users each booking a different seat.
-  //   Expected: all succeed (no lock contention).
-  // ──────────────────────────────────────────────────────────────────────────
-  // Note: autocannon sends the same body to all connections — use TEST 1 data
-  // to verify lock contention, test 2 is a baseline for healthy throughput.
   await runLoadTest({
     title: 'Baseline — GET all bookings (no contention)',
     url: 'http://localhost:3002/api/bookings',
@@ -62,9 +47,6 @@ async function runTests() {
     duration: 5,
   });
 
-  // ──────────────────────────────────────────────────────────────────────────
-  // TEST 3: Auth login throughput
-  // ──────────────────────────────────────────────────────────────────────────
   await runLoadTest({
     title: 'Auth Service — login throughput',
     url: 'http://localhost:3001/auth/login',

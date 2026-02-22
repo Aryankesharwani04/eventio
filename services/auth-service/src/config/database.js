@@ -1,5 +1,5 @@
 // Database configuration
-module.exports = {
+export default {
   mongooseOptions: {
     useNewUrlParser: true,
     useUnifiedTopology: true,

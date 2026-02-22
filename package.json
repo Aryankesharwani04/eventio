@@ -2,6 +2,7 @@
   "name": "eventio",
   "version": "1.0.0",
   "description": "Microservices-based movie ticket booking system",
+  "type": "module",
   "scripts": {
     "load-test": "node load-tests/run-load-test.js"
   },

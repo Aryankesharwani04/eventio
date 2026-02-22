@@ -1,7 +1,6 @@
-const Seat = require('../models/Seat');
+import Seat from '../models/Seat.js';
 
-//make get request to search seat with their seat number and return the boolean value of isBooked
-exports.getSeat = async (req, res) => {
+export const getSeat = async (req, res) => {
     try {
         const { seatNumber } = req.params;
         const seat = await Seat.findOne({ seatNumber });
@@ -14,13 +13,10 @@ exports.getSeat = async (req, res) => {
     }
 };
 
-//make put request to update the seat status to booked only if userId is provided
-exports.bookSeat = async (req, res) => {
+export const bookSeat = async (req, res) => {
     try {
         const { userId, seatNumber } = req.body;
-        const seat = await Seat
-        .findOne({ seatNumber })
-        .populate('user');
+        const seat = await Seat.findOne({ seatNumber });
         if (!seat) {
             return res.status(404).send({ error: 'Seat not found' });
         }
@@ -34,14 +30,12 @@ exports.bookSeat = async (req, res) => {
         seat.user = userId;
         await seat.save();
         res.status(200).send({ message: 'Seat booked successfully' });
-    }
-    catch (error) {
+    } catch (error) {
         res.status(400).send({ error: 'Error booking seat' });
     }
 };
 
-
-exports.addSeat = async (req, res) => {
+export const addSeat = async (req, res) => {
     try {
         const { seatNumber, isBooked } = req.body;
         const seat = new Seat({ seatNumber, isBooked });

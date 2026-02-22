@@ -1,6 +1,6 @@
 // Shared constants across Eventio microservices
 
-const HTTP_STATUS = {
+export const HTTP_STATUS = {
   OK: 200,
   CREATED: 201,
   ACCEPTED: 202,
@@ -15,7 +15,7 @@ const HTTP_STATUS = {
   SERVICE_UNAVAILABLE: 503
 };
 
-const SERVICE_PORTS = {
+export const SERVICE_PORTS = {
   AUTH: process.env.AUTH_SERVICE_PORT || 3001,
   BOOKING: process.env.BOOKING_SERVICE_PORT || 3002,
   SEAT: process.env.SEAT_SERVICE_PORT || 3003,
@@ -24,17 +24,11 @@ const SERVICE_PORTS = {
   GATEWAY: process.env.GATEWAY_PORT || 3000
 };
 
-const SERVICE_NAMES = {
+export const SERVICE_NAMES = {
   AUTH: 'auth-service',
   BOOKING: 'booking-service',
   SEAT: 'seat-service',
   PAYMENT: 'payment-service',
   NOTIFICATION: 'notification-service',
   GATEWAY: 'api-gateway'
-};
-
-module.exports = {
-  HTTP_STATUS,
-  SERVICE_PORTS,
-  SERVICE_NAMES
 };

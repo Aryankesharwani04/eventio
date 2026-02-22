@@ -1,15 +1,13 @@
-const express = require('express');
-const axios = require('axios');
-const Booking = require('../models/Booking');
-const { acquireSeatLock, releaseSeatLock } = require('../utils/seatLock');
+import express from 'express';
+import axios from 'axios';
+import Booking from '../models/Booking.js';
+import { acquireSeatLock, releaseSeatLock } from '../utils/seatLock.js';
 
 const router = express.Router();
 
 const SEAT_SERVICE_URL = process.env.SEAT_SERVICE_URL || 'http://localhost:3003';
 
-// ─────────────────────────────────────────────────────────────────────────────
 // POST /api/book
-// ─────────────────────────────────────────────────────────────────────────────
 router.post('/book', async (req, res) => {
   const { userId, seatNumber, showId = 'default-show' } = req.body;
 
@@ -17,7 +15,6 @@ router.post('/book', async (req, res) => {
     return res.status(400).json({ message: 'userId and seatNumber are required' });
   }
 
-  // ── 1. Try Redis lock ──────────────────────────────────────────────────────
   const locked = await acquireSeatLock(showId, seatNumber, userId);
 
   if (!locked) {
@@ -27,16 +24,14 @@ router.post('/book', async (req, res) => {
     });
   }
 
-  // ── 2-4. Business flow — always release lock in catch ─────────────────────
   try {
-    // 2. Verify seat exists & availability via seat-service
     let seat;
     try {
       const seatResponse = await axios.get(`${SEAT_SERVICE_URL}/seats/seat/${seatNumber}`);
       seat = seatResponse.data;
     } catch (err) {
       if (err.response && err.response.status === 404) {
-        seat = { isBooked: false }; // seat doesn't exist yet, will be created
+        seat = { isBooked: false };
       } else {
         throw err;
       }
@@ -49,19 +44,16 @@ router.post('/book', async (req, res) => {
       });
     }
 
-    // 3. Mark seat as reserved in seat-service
     try {
       await axios.put(`${SEAT_SERVICE_URL}/seats/book`, { seatNumber, userId });
     } catch (err) {
       if (err.response && err.response.status === 404) {
-        // Seat record doesn't exist — create it
         await axios.post(`${SEAT_SERVICE_URL}/seats`, { seatNumber, isBooked: true, userId });
       } else {
         throw err;
       }
     }
 
-    // 4. Save booking in MongoDB
     const booking = new Booking({ userId, seatNumber, showId });
     await booking.save();
 
@@ -72,14 +64,11 @@ router.post('/book', async (req, res) => {
     return res.status(500).json({ message: 'Booking failed', error: error.message });
 
   } finally {
-    // Atomic ownership-checked release — Lua script ensures we only DEL if still owner
     await releaseSeatLock(showId, seatNumber, userId).catch(() => {});
   }
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
 // GET /api/bookings
-// ─────────────────────────────────────────────────────────────────────────────
 router.get('/bookings', async (req, res) => {
   try {
     const bookings = await Booking.find();
@@ -89,4 +78,4 @@ router.get('/bookings', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

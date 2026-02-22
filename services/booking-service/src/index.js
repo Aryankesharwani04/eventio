@@ -1,33 +1,30 @@
-const cluster = require('cluster');
-const os = require('os');
-require('dotenv').config();
-const express = require('express');
-const mongoose = require('mongoose');
-const morgan = require('morgan');
-const bookingRoutes = require('./routes/bookingRoutes');
-const dbConfig = require('./config/database');
+import cluster from 'cluster';
+import os from 'os';
+import 'dotenv/config';
+import express from 'express';
+import mongoose from 'mongoose';
+import morgan from 'morgan';
+import bookingRoutes from './routes/bookingRoutes.js';
+import dbConfig from './config/database.js';
 
 const numCPUs = os.cpus().length;
 
 if (cluster.isMaster) {
     console.log(`Master ${process.pid} is running`);
 
-    // Fork workers
     for (let i = 0; i < numCPUs; i++) {
         cluster.fork();
     }
 
-    cluster.on('exit', (worker, code, signal) => {
+    cluster.on('exit', (worker) => {
         console.log(`Worker ${worker.process.pid} died`);
-        cluster.fork(); // Restart the worker
+        cluster.fork();
     });
 } else {
     const app = express();
 
-    // Setup morgan to log to the console
     app.use(morgan('dev'));
 
-    // Connect to MongoDB
     mongoose.connect(dbConfig.databaseURL, dbConfig.mongooseOptions);
 
     app.use(express.json());
