@@ -9,7 +9,7 @@ import dbConfig from './config/database.js';
 
 const numCPUs = os.cpus().length;
 
-if (cluster.isMaster) {
+if (cluster.isPrimary) {
     console.log(`Master ${process.pid} is running`);
 
     for (let i = 0; i < numCPUs; i++) {
